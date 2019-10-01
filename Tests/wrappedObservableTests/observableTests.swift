@@ -1,5 +1,5 @@
 import XCTest
-@testable import observable
+@testable import wrappedObservable
 
 final class observableTests: XCTestCase {
     
