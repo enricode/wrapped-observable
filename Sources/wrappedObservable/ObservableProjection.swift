@@ -1,6 +1,6 @@
 import Foundation
 
-class ObservableProjection<Value> {
+public class ObservableProjection<Value> {
     public typealias Observer = (_ observable: Value, Value) -> Void
 
     private var observers: [Observer] = []

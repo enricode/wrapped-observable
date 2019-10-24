@@ -1,17 +1,17 @@
 import Foundation
 
 @propertyWrapper
-struct Observable<Value> {
+public struct Observable<Value> {
     
-    init(wrappedValue value: Value) {
+    public init(wrappedValue value: Value) {
         self.wrappedValue = value
     }
     
-    var wrappedValue: Value {
+    public var wrappedValue: Value {
         didSet {
             projectedValue.notifyObservers(oldValue: oldValue, newValue: wrappedValue)
         }
     }
     
-    private(set) var projectedValue: ObservableProjection<Value> = ObservableProjection()
+    private(set) public var projectedValue: ObservableProjection<Value> = ObservableProjection()
 }
