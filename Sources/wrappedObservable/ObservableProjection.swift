@@ -5,8 +5,12 @@ public class ObservableProjection<Value> {
 
     private var observers: [Observer] = []
     
-    func observe(observer: @escaping Observer) {
-        self.observers.append(observer)
+    public func observe(observer: @escaping Observer) {
+        observers.append(observer)
+    }
+    
+    func deleteObservers() {
+        observers = []
     }
     
     func notifyObservers(oldValue: Value, newValue: Value) {

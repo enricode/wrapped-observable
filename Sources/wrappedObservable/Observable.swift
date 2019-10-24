@@ -13,5 +13,9 @@ public struct Observable<Value> {
         }
     }
     
+    public func cancellAll() {
+        projectedValue.deleteObservers()
+    }
+    
     private(set) public var projectedValue: ObservableProjection<Value> = ObservableProjection()
 }
