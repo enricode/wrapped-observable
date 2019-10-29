@@ -4,21 +4,22 @@
 import PackageDescription
 
 let package = Package(
-    name: "wrappedObservable",
+    name: "Wrapped Observable",
     products: [
         .library(
-            name: "wrappedObservable",
-            targets: ["wrappedObservable"]),
+            name: "WrappedObservable",
+            targets: ["WrappedObservable"]
+        )
     ],
-    dependencies: [
-        // .package(url: /* package url */, from: "1.0.0"),
-    ],
+    dependencies: [],
     targets: [
         .target(
-            name: "wrappedObservable",
-            dependencies: []),
+            name: "WrappedObservable",
+            dependencies: []
+        ),
         .testTarget(
-            name: "wrappedObservableTests",
-            dependencies: ["wrappedObservable"]),
+            name: "Wrapped Observable Tests",
+            dependencies: ["WrappedObservable"]
+        )
     ]
 )
