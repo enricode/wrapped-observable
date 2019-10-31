@@ -4,9 +4,9 @@ import XCTest
 final class ObservableTests: XCTestCase {
     
     var testStruct: TestStruct!
-    var observerdObject: TestClass!
     var oldValue: String!
     var newValue: String!
+    var disposable: Disposable!
     var observerCalled: Bool = false
     
     override func setUp() {
@@ -14,6 +14,7 @@ final class ObservableTests: XCTestCase {
         observerCalled = false
         oldValue = nil
         newValue = nil
+        disposable = nil
     }
     
     struct TestStruct {
@@ -44,66 +45,80 @@ final class ObservableTests: XCTestCase {
         thenObservableIsCalled()
     }
     
-    func testRemovingObserver() {
-        givenAStructWithObservable(initialValue: "hello")
-        givenAnObserver()
-        whenCancelingObservation()
-        whenChangingValue(to: "new value")
-        thenObservableIsNotCalled()
-    }
-    
-    func testMemoryManagementStruct() {
-        givenAStructWithObservable(initialValue: "hello")
-        whenRemovingStructFromMemory()
-        whenChangingValue(to: "new value")
-        thenObservablesAreNiled()
-    }
-    
-    func testMemoryManagementClass() {
-        givenAStructWithObservable(initialValue: "hello")
-        whenRemovingStructFromMemory()
-        whenChangingValue(to: "new value")
-        thenObservablesAreNiled()
-    }
-    
-    func testInitialObservation() {
-        givenAStructWithObservable(initialValue: "hello")
-        givenAnObserver(sendInitialValue: true)
-        thenObservableIsCalled(with: "hello")
-    }
-
+//    func testRemovingObserver() {
+//        givenAStructWithObservable(initialValue: "hello")
+//        givenAnObserver()
+//        whenCancelingObservation()
+//        whenChangingValue(to: "new value")
+//        thenObservableIsNotCalled()
+//    }
+//
+//    func testMemoryManagementStruct() {
+//        givenAStructWithObservable(initialValue: "hello")
+//        whenRemovingStructFromMemory()
+//        whenChangingValue(to: "new value")
+//        thenObservablesAreNiled()
+//    }
+//
+//    func testMemoryManagementClass() {
+//        givenAStructWithObservable(initialValue: "hello")
+//        whenRemovingStructFromMemory()
+//        whenChangingValue(to: "new value")
+//        thenObservablesAreNiled()
+//    }
+//
+//    func testInitialObservation() {
+//        givenAStructWithObservable(initialValue: "hello")
+//        givenAnObserver(sendInitialValue: true)
+//        thenObservableIsCalled(with: "hello")
+//    }
+//
     private func givenAStructWithObservable(initialValue: String) {
         testStruct = TestStruct(testValue: initialValue)
     }
     
     private func givenAnObserverWithCallback() {
-        testStruct.$testValue.observe { oldValue, newValue in
+        disposable = testStruct.$testValue.observe { oldValue, newValue in
             self.oldValue = oldValue
             self.newValue = newValue
             self.observerCalled = true
-        }.add(to: disposable)
+        }
     }
     
-    private func givenAnObserver() {
-        testStruct.$testValue.observe { change in
+    private func givenAnObserver(sendInitialValue: Bool = false) {
+        disposable = testStruct.$testValue.observe { oldValue, newValue in
+            self.oldValue = oldValue
+            self.newValue = newValue
             self.observerCalled = true
-        }.add(to: disposable)
+        }
     }
     
     private func givenAnObjectObserver() {
-        testStruct.$testValue.observe { observedObject in
-            self.observedObject = observedObject
-            self.observerCalled = true
-        }.add(to: disposable)
+//        disposable = testStruct.$testValue.observe { observedObject in
+//            self.observedObject = observedObject
+//            self.observerCalled = true
+//        }
     }
     
     private func whenChangingValue(to newValue: String) {
         testStruct.testValue = newValue
     }
     
-    private func thenObservableIsCalled() {
+    private func whenCancelingObservation() {
+//        observation.cancel()
+    }
+    
+    private func whenRemovingStructFromMemory() {
+        testStruct = nil
+    }
+    
+    private func thenObservableIsCalled(with value: String? = nil) {
         XCTAssertNotNil(observerCalled)
         XCTAssertTrue(observerCalled)
+        
+        if let value = value {
+            XCTAssertEqual(newValue, value)
+        }
     }
     
     private func thenNewValue(is newValue: String) {
@@ -112,6 +127,14 @@ final class ObservableTests: XCTestCase {
     
     private func thenOldValue(is oldValue: String) {
         XCTAssertEqual(oldValue, self.oldValue)
+    }
+    
+    private func thenObservableIsNotCalled() {
+        XCTAssertFalse(observerCalled)
+    }
+    
+    private func thenObservablesAreNiled() {
+        XCTFail()
     }
     
     static var allTests = [

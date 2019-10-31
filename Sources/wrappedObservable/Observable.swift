@@ -5,6 +5,7 @@ public struct Observable<Value> {
     
     public init(wrappedValue value: Value) {
         self.wrappedValue = value
+        projectedValue = ObservableProjection(initialValue: value)
     }
     
     public var wrappedValue: Value {
@@ -13,9 +14,9 @@ public struct Observable<Value> {
         }
     }
     
-    public func cancellAll() {
+    public func cancelAll() {
         projectedValue.deleteObservers()
     }
     
-    private(set) public var projectedValue: ObservableProjection<Value> = ObservableProjection()
+    private(set) public var projectedValue: ObservableProjection<Value>
 }
