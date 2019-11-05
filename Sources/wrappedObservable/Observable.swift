@@ -3,20 +3,22 @@ import Foundation
 @propertyWrapper
 public struct Observable<Value> {
     
-    public init(wrappedValue value: Value) {
-        self.wrappedValue = value
-        projectedValue = ObservableProjection(initialValue: value)
+    let projection: ObservableProjection<Value>
+    
+    public init(wrappedValue: Value) {
+        projection = ObservableProjection(initialValue: wrappedValue)
     }
     
     public var wrappedValue: Value {
-        didSet {
-            projectedValue.notifyObservers(oldValue: oldValue, newValue: wrappedValue)
+        get {
+            return projection.currentValue
+        }
+        set {
+            projection.currentValue = newValue
         }
     }
     
-    public func cancelAll() {
-        projectedValue.deleteObservers()
+    public var projectedValue: ObservableProjection<Value> {
+        return projection
     }
-    
-    private(set) public var projectedValue: ObservableProjection<Value>
 }

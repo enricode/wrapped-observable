@@ -1,42 +1,48 @@
 import Foundation
 
 public class ObservableProjection<Value> {
-    public typealias Observer = (_ observable: Value, Value) -> Void
+    public typealias ObserverCallback = (Value, Value) -> Void
 
     private let lock: Lock = Mutex()
-    private var uniqueID = (0...).makeIterator()
-    private var observers: [Int: Observer] = [:]
-    
+    private var observers: [String: ObserverCallback] = [:]
+
     private let initialValue: Value
-    
-    init(initialValue: Value) {
-        self.initialValue = initialValue
+    var currentValue: Value {
+        didSet {
+            notifyObservers(oldValue: oldValue, newValue: currentValue)
+        }
     }
-    
-    public func observe(observer: @escaping Observer) -> Disposable {
+
+    public init(initialValue: Value) {
+        self.initialValue = initialValue
+        self.currentValue = initialValue
+    }
+
+    public func observe(_ observer: @escaping ObserverCallback) -> Disposable {
         lock.lock()
         defer { lock.unlock() }
 
-        let id = uniqueID.next()!
+        let id = UUID().uuidString
         
         observers[id] = observer
-        
+
         let disposable = Disposable { [weak self] in
             self?.observers[id] = nil
         }
-        
+
         observer(initialValue, initialValue)
-        
+
         return disposable
     }
-    
-    func deleteObservers() {
+
+    public func deleteObservers() {
         observers.removeAll()
     }
-    
+
     func notifyObservers(oldValue: Value, newValue: Value) {
         observers.values.forEach { observer in
             observer(oldValue, newValue)
         }
     }
+
 }
